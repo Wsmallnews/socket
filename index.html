@@ -16,7 +16,7 @@
 
 
             var user = {
-                id: 1,
+                id: 2,
                 name: 'smallnews',
                 phone: '15737921560'
             }
@@ -24,28 +24,13 @@
 
             var socket = io('http://localhost:7001/user');      // user 是命名空间
 
-            socket.on('user-connect', function (data, cb) {
-                if (data != undefined && data.user != undefined && data.user.id > 0) {
-                    var socketId = "socket-" + data.user.id;
-                    var is_exist = false;
-                    for (let item of socketPool) {
-                        if (item.socketId == socketId) {
-                            is_exist = true;
-                        }
-                    }
-
-                    if (!is_exist) {        // 将当前用户 放入 socket 连接池
-                        socketPool.push({socketId: socketId, socket: socket})
-                        console.log(socketPool);
-                    }
-                }
-
-                cb({error: 0, info: '连接成功'});
+            socket.emit('user-connect', { user: user }, function (data) {       // 连接到连接池
+                console.log(data);
             });
 
-            // socket.emit('user-connect', { user: user }, function (data) {
-            //     console.log(data);
-            // });
+            socket.on('user-message', function (msg) {
+                console.log(msg);
+            });
         </script>
     </body>
 </html>
